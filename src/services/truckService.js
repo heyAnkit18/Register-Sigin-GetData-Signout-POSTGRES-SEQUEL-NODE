@@ -1,3 +1,4 @@
+const { response } = require('express');
 const { sequelize2 } = require('../database');
 const TruckMaster = require('../database/models/truckMasters');
 const airlineBranch = require('../database/repository/airlineBranch');
@@ -181,6 +182,31 @@ module.exports = {
                 });
             }
         }
+    ,
+    getAllSarthiDetails:
+        async function allSarthi(req,res,next){
+            try {
+                const allSarthi= await Sarthi.findAll()
+                if(!allSarthi){
+                    res.status(404).json({
+                        success:true,
+                        message:"Data Not Avalable!",
+                        data:[]
+
+                    })
+                }
+                else{
+                    res.status(200).json({
+                        success:true,
+                        data:allSarthi,
+                        message:"Data Avalable !"
+                    })
+                }  
+            } catch (error) {
+                
+            }
+        }
+
 
 
 }

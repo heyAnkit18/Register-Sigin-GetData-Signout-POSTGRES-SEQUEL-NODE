@@ -37,7 +37,40 @@ const TruckMaster=sequelize2.define('TruckMaster',{
     timestamps:true,
     freezeTableName:true,
     modelName:'TruckMaster',
-    paranoid:true
+    paranoid:true,
+    hooks: {
+        beforeValidate: (truckMaster, options) => {
+         console.log('runing --->>>>>> beforeValidate');
+        
+        },
+        afterValidate:(truckMaster,options)=>{
+          console.log('runing --->>>>>> afterValidate')  
+
+        },
+        beforeCreate:(truckMaster,options)=>{
+          console.log('runing ---->>>beforeCreate ')
+        },
+        beforeDestroy:(truckMaster,options)=>{
+            console.log("Runing----->beforeDestroy")
+        },
+        beforeUpdate:(truckMaster,options)=>{
+            console.log("Runing --->>> beforeUpdate")
+        },
+        beforeUpsert:(truckMaster,options)=>{
+            console.log("runing --->>beforeUpsert")
+
+        },
+        afterCreate:(truckMaster,options)=>{
+            console.log('runing --->>afterCreate')
+        },
+        afterDestroy:(truckMaster,options)=>{
+           console.log("truning---> afterDestroy")
+        },
+        afterUpdate:(truckMaster,options)=>{
+            console.log("runing --->>>>afterUpdate")
+        }
+      },
+
 })
 
 // TruckMaster.hasMany(Sarthi)
