@@ -2,23 +2,22 @@ const express=require('express')
 const app=express()
 const cors=require('cors')
 const {port}=require('./config/index')
-
-
 const routes=require("./apis/index")
 const airfreightRoute=require("./apis/routes/airfreightRoot")
 const airLine=require("./apis/routes/airLineRoot")
 const truck=require("./apis/routes/truckMaster")
+const movie=require("./apis/routes/movieRoute")
 
 // body parse and initial setup
 
 app.use(express.json())
 app.use(express.urlencoded({extended:false}))
 app.use(cors());
-
 app.use("/api/v1",routes)
 app.use("/api/v1/airfreight",airfreightRoute)
 app.use("/api/v1/airline",airLine)
 app.use("/api/v1/truck",truck)
+app.use("/api/v1/movie",movie)
 
 
 

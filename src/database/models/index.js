@@ -6,7 +6,8 @@ const VenderMail=require('./newVenderMail')
 const Currency=require('./currency')
 const TruckMaster=require('./truckMasters')
 const Sarthi=require('./sarthi')
-
+const Movie =require('./Movie')
+const Actor=require('./Actor')
 module.exports={
     customer:require('./customer'),
     AirFreight:require('./airFreights'),
@@ -16,5 +17,8 @@ module.exports={
     VenderMail,
     Currency,
     TruckMaster,
-    Sarthi
+    Sarthi,
+    Movie,
+    Actor
+
 }

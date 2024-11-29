@@ -7,4 +7,5 @@ module.exports={
     airlineCintectPersion:require("./airlinecontectectperson"),
     airFreightRapository:require("./airlinevendor.js"),
     currencyRepository:require('./currency-reposiotry.js')
+    
 }

@@ -1,5 +1,4 @@
-const { response } = require('express');
-const { sequelize2 } = require('../database');
+
 const TruckMaster = require('../database/models/truckMasters');
 const airlineBranch = require('../database/repository/airlineBranch');
 const { Sarthi } = require('./../database/models/index');
