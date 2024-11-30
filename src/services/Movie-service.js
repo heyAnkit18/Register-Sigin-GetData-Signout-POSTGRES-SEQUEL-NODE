@@ -157,58 +157,83 @@ module.exports = {
         },
 
     addMovieToanActor:
-    async (req, res, next) => {
-        try {
-            const { ActorId } = req.params; // ActorId from params
-            const { movieNames } = req.body; // Accept an array of movie names in the request body
-    
-            // Validate the input
-            if (!movieNames || !Array.isArray(movieNames) || movieNames.length === 0) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Movie names must be provided as an array.',
+        async (req, res, next) => {
+            try {
+                const { ActorId } = req.params; // ActorId from params
+                const { movieNames } = req.body; // Accept an array of movie names in the request body
+
+                // Validate the input
+                if (!movieNames || !Array.isArray(movieNames) || movieNames.length === 0) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Movie names must be provided as an array.',
+                    });
+                }
+
+                // Find the actor
+                const actor = await Actor.findOne({ where: { id: ActorId } });
+                if (!actor) {
+                    return res.status(404).json({
+                        success: false,
+                        message: 'Actor not found.',
+                    });
+                }
+
+                // Find or create the movies
+                const movies = await Promise.all(
+                    movieNames.map(async (movieName) => {
+                        // Check if movie already exists
+                        let movie = await Movie.findOne({ where: { movieName } });
+                        if (!movie) {
+                            // If the movie doesn't exist, create it
+                            movie = await Movie.create({ movieName });
+                        }
+                        return movie;
+                    })
+                );
+
+                // Associate the found or created movies with the actor
+                await actor.addMovies(movies); // Sequelize's `addMovies` method
+
+                return res.status(200).json({
+                    success: true,
+                    message: 'Movies successfully added to the actor.',
                 });
+            } catch (error) {
+                console.error('Error adding movies to actor:', error);
+                next(error);
             }
-    
-            // Find the actor
-            const actor = await Actor.findOne({ where: { id: ActorId } });
-            if (!actor) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Actor not found.',
-                });
-            }
-    
-            // Find or create the movies
-            const movies = await Promise.all(
-                movieNames.map(async (movieName) => {
-                    // Check if movie already exists
-                    let movie = await Movie.findOne({ where: { movieName } });
-                    if (!movie) {
-                        // If the movie doesn't exist, create it
-                        movie = await Movie.create({ movieName });
-                    }
-                    return movie;
-                })
-            );
-    
-            // Associate the found or created movies with the actor
-            await actor.addMovies(movies); // Sequelize's `addMovies` method
-    
-            return res.status(200).json({
-                success: true,
-                message: 'Movies successfully added to the actor.',
-            });
-        } catch (error) {
-            console.error('Error adding movies to actor:', error);
-            next(error);
-        }
-    },
-     
+        },
     getActorById:
-    async(req,res,next)=>{
-        
-    }
+        async (req, res, next) => {
+            const actorId = req.params.id
+            const esistingActorData = await Actor.findAll({
+                where: {
+                    id: actorId
+                }
+                ,
+                include:{
+                    model:Movie,
+                    as:'Movies'
+                }
+            })
+
+            if (!esistingActorData) {
+                return res.status(404).json({
+                    message: "Movie Not Ablable!...",
+                    success: true
+
+                })
+            }
+
+            res.status(200).json({
+                success:true,
+                message:"Data avlable!",
+                data:esistingActorData
+            })
+
+
+        }
 
 
 
