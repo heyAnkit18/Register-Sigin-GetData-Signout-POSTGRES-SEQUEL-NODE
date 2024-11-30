@@ -19,7 +19,7 @@ const Actor = sequelize.define("Actor", {
 });
 
 // Define the many-to-many relationship between Actor and Movie
-Actor.belongsToMany(Movie, { through: 'ActorMovie' });
+Actor.belongsToMany(Movie, { through: 'ActorMovie' ,as :'Movies' });
 Movie.belongsToMany(Actor, { through: 'ActorMovie', as: 'Actors' });
 
 module.exports = Actor;

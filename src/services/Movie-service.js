@@ -34,15 +34,13 @@ module.exports = {
             res.status(200).json({
                 success: true,
                 message: 'Data created successfully',
-                result: {
-                    ...newMovie,
-                    ...newActor
-                },
+                result: newMovie
             });
         } catch (error) {
             next(error);
         }
     },
+
     getActoreByMovieId: async (req, res, next) => {
         const { id } = req.params;
         const movieData = await Movie.findByPk(id)
@@ -56,6 +54,7 @@ module.exports = {
 
 
     },
+
     getallMovieDetailsBy:
         async (req, res, next) => {
             try {
@@ -82,7 +81,138 @@ module.exports = {
                     error: error.message // Optional: Send error message to client for debugging purposes (avoid in production)
                 });
             }
+        },
+    addActorOfAmovie:
+        async (req, res, next) => {
+            try {
+                const movieId = req.params.id; // Get movie ID from params
+                const { actorName } = req.body; // Get actorName from request body
+
+                // Step 1: Find the movie by ID
+                const existingMovie = await Movie.findOne({ where: { id: movieId } });
+                if (!existingMovie) {
+                    return res.status(404).json({
+                        message: 'Movie not found',
+                        success: false,
+                    });
+                }
+
+                // Step 2: Find or create the actor
+                let actor = await Actor.findOne({ where: { ActorName: actorName } });
+                if (!actor) {
+                    actor = await Actor.create({ ActorName: actorName });
+                }
+                // Step 3: Add the actor to the movie
+                await existingMovie.addActor(actor);
+                // Step 4: Fetch the updated list of actors for the movie
+                const actors = await existingMovie.getActors();
+                res.status(200).json({
+                    message: `Actor "${actorName}" added successfully to the movie "${existingMovie.movieName}"`,
+                    success: true,
+                    actors, // Return the updated list of actors
+                });
+            } catch (error) {
+                next(error); // Pass the error to the error handler middleware
+            }
+
+        },
+
+    updateActorMovieActor:
+        async (req, res, next) => {
+            try {
+                const { movieId, actorId } = req.params;
+                const { actorDetail } = req.body;
+
+                if (!actorDetail) {
+                    return res.status(400).json({ message: "Actor details are required." });
+                }
+
+                // Check if the actor and movie association exists
+                const movie = await Movie.findByPk(movieId, {
+                    include: [
+                        {
+                            model: Actor,
+                            as: 'Actors', // Alias is mandatory here
+                        },
+                    ],
+                });
+
+                if (!movie) {
+                    return res.status(404).json({ message: "Actor-Movie association not found." });
+                }
+
+                // Update actor details
+                const [updated] = await Actor.update(actorDetail, {
+                    where: { id: actorId },
+                });
+                if (!updated) {
+                    return res.status(404).json({ message: "Actor not found or no changes made." });
+                }
+                return res.status(200).json({
+                    message: "Actor details updated successfully.",
+                });
+            } catch (error) {
+                next(error);
+            }
+        },
+
+    addMovieToanActor:
+    async (req, res, next) => {
+        try {
+            const { ActorId } = req.params; // ActorId from params
+            const { movieNames } = req.body; // Accept an array of movie names in the request body
+    
+            // Validate the input
+            if (!movieNames || !Array.isArray(movieNames) || movieNames.length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Movie names must be provided as an array.',
+                });
+            }
+    
+            // Find the actor
+            const actor = await Actor.findOne({ where: { id: ActorId } });
+            if (!actor) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Actor not found.',
+                });
+            }
+    
+            // Find or create the movies
+            const movies = await Promise.all(
+                movieNames.map(async (movieName) => {
+                    // Check if movie already exists
+                    let movie = await Movie.findOne({ where: { movieName } });
+                    if (!movie) {
+                        // If the movie doesn't exist, create it
+                        movie = await Movie.create({ movieName });
+                    }
+                    return movie;
+                })
+            );
+    
+            // Associate the found or created movies with the actor
+            await actor.addMovies(movies); // Sequelize's `addMovies` method
+    
+            return res.status(200).json({
+                success: true,
+                message: 'Movies successfully added to the actor.',
+            });
+        } catch (error) {
+            console.error('Error adding movies to actor:', error);
+            next(error);
         }
+    },
+     
+    getActorById:
+    async(req,res,next)=>{
+        
+    }
+
+
+
+
 
 
 }

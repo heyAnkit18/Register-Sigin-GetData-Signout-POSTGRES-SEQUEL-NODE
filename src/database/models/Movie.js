@@ -1,5 +1,6 @@
 const {DataTypes, }=require('sequelize')
-const {sequelize}=require('./../index')
+const {sequelize}=require('./../index');
+const { Actor } = require('.');
 
 const Movie= sequelize.define('Movie',{
     id:{
@@ -17,5 +18,6 @@ const Movie= sequelize.define('Movie',{
     modelName: 'Movie',
 }
 )
+
 
 module.exports=Movie
