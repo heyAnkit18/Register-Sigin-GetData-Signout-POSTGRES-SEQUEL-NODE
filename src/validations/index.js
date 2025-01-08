@@ -1,3 +1,3 @@
 module.exports={
-    schema:require("./joivalidationSchema/index")
+    // schema:require("./joivalidationSchema/index")
 }

@@ -13,9 +13,8 @@ try {
 
 
 
-sequelize.sync({alter:true})
 
-// sequelize.sync({ force: true })
+sequelize.sync({ force: true })
 
 
-module.exports=sequelize 
+module.exports=sequelize
